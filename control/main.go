@@ -6,7 +6,7 @@ import (
 	_ "image/png"
 	"log"
 
-	"./images"
+	"../resources/images"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
@@ -19,7 +19,12 @@ type Player struct {
 	frameWidth  int
 	frameHeight int
 	frameNum    int
-	image       *ebiten.Image
+	sprite      *ebiten.Image
+	walkR       *ebiten.Image
+	walkL       *ebiten.Image
+	idleR       *ebiten.Image
+	idleL       *ebiten.Image
+	direction   int
 }
 
 const (
@@ -36,58 +41,90 @@ var (
 func (pl *Player) update(screen *ebiten.Image) error {
 	count++
 
-	ebitenutil.DebugPrint(screen, "pota merda")
+	ebitenutil.DebugPrint(screen, "W A S D")
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(-float64(pl.frameWidth)/2, -float64(pl.frameHeight)/2)
-	op.GeoM.Translate(pl.x, pl.y)
+	op.GeoM.Translate(screenWidth/2, screenHeight/2)
 	i := (count / 5) % pl.frameNum
 	sx, sy := pl.frameOX, pl.frameOY+i*pl.frameHeight
 	r := image.Rect(sx, sy, sx+pl.frameWidth, sy+pl.frameHeight)
 	op.SourceRect = &r
-	screen.DrawImage(pl.image, op)
+	screen.DrawImage(pl.sprite, op)
 	return nil
 }
 
 func update(screen *ebiten.Image) error {
+
+	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		pl.frameOX = 0
+		pl.frameOY = 80
+		pl.frameWidth = 90
+		pl.frameHeight = 80
+		pl.frameNum = 7
+		pl.direction = 1
+		// Selects preloaded sprite
+		pl.sprite = pl.walkL
+		// Moves character 3px right
+		//charX -= 3
+	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
+		pl.frameOX = 0
+		pl.frameOY = 80
+		pl.frameWidth = 90
+		pl.frameHeight = 80
+		pl.frameNum = 7
+		pl.direction = 0
+		// Selects preloaded sprite
+		pl.sprite = pl.walkR
+		// Moves character 3px left
+		//charX += 3
+	} else {
+		pl.frameOX = 0
+		pl.frameOY = 77
+		pl.frameWidth = 90
+		pl.frameHeight = 77
+		pl.frameNum = 4
+
+		if pl.direction == 1 {
+			pl.sprite = pl.idleL
+		} else {
+			pl.sprite = pl.idleR
+		}
+
+	}
 
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
 
 	pl.update(screen)
-	p2.update(screen)
 
 	return nil
 }
 
 func main() {
-	pl.frameOX = 0
-	pl.frameOY = 77
-	pl.frameWidth = 90
-	pl.frameHeight = 77
-	pl.frameNum = 4
-	pl.x = 100
-	pl.y = 100
 
-	p2.frameOX = 0
-	p2.frameOY = 80
-	p2.frameWidth = 90
-	p2.frameHeight = 80
-	p2.frameNum = 7
-	p2.x = 200
-	p2.y = 100
-
-	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMG))
+	bsl, _, err := image.Decode(bytes.NewReader(images.BossStandIMGL))
 	if err != nil {
 		log.Fatal(err)
 	}
-	img2, _, err := image.Decode(bytes.NewReader(images.BossWalkIMG))
+	bwr, _, err := image.Decode(bytes.NewReader(images.BossWalkIMGR))
 	if err != nil {
 		log.Fatal(err)
 	}
-	pl.image, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-	p2.image, _ = ebiten.NewImageFromImage(img2, ebiten.FilterDefault)
+	bsr, _, err := image.Decode(bytes.NewReader(images.BossStandIMGR))
+	if err != nil {
+		log.Fatal(err)
+	}
+	bwl, _, err := image.Decode(bytes.NewReader(images.BossWalkIMGL))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pl.idleL, _ = ebiten.NewImageFromImage(bsl, ebiten.FilterDefault)
+	pl.idleR, _ = ebiten.NewImageFromImage(bsr, ebiten.FilterDefault)
+	pl.walkL, _ = ebiten.NewImageFromImage(bwl, ebiten.FilterDefault)
+	pl.walkR, _ = ebiten.NewImageFromImage(bwr, ebiten.FilterDefault)
 
 	if err := ebiten.Run(update, screenWidth, screenHeight, 2, "Animation two entities"); err != nil {
 		log.Fatal(err)
