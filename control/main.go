@@ -6,8 +6,7 @@ import (
 	_ "image/png"
 	"log"
 
-	"../resources/images"
-
+	"./images"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
@@ -79,11 +78,11 @@ func main() {
 	p2.x = 200
 	p2.y = 100
 
-	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMGR))
+	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMG))
 	if err != nil {
 		log.Fatal(err)
 	}
-	img2, _, err := image.Decode(bytes.NewReader(images.BossWalkIMGR))
+	img2, _, err := image.Decode(bytes.NewReader(images.BossWalkIMG))
 	if err != nil {
 		log.Fatal(err)
 	}
