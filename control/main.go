@@ -6,7 +6,7 @@ import (
 	_ "image/png"
 	"log"
 
-	"../resources/images"
+	"github.com/liquuid/gogame/resources/images"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )

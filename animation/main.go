@@ -6,10 +6,9 @@ import (
 	_ "image/png"
 	"log"
 
-	"../resources/images"
-
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/liquuid/gogame/resources/images"
 )
 
 type Player struct {
