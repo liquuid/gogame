@@ -2,7 +2,7 @@ package window
 
 import (
 	"bytes"
-	"fmt"
+	//"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
@@ -19,7 +19,7 @@ func Update(screen *ebiten.Image) error{
 	screenScale := ebiten.ScreenScale()
 	screenWidth, screenHeight := screen.Size()
 	fullscreen := ebiten.IsFullscreen()
-	tps := 6 // ebiten.MaxTPS()
+	tps := 15 // ebiten.MaxTPS()
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		switch screenScale {
@@ -53,16 +53,16 @@ func Update(screen *ebiten.Image) error{
 
 	screen.Fill(color.RGBA{0x80, 0x80, 0xc0, 0xff})
 
-	x, y := ebiten.CursorPosition()
+	//x, y := ebiten.CursorPosition()
 
-	msg := fmt.Sprintf(`Press S key to change the window scale
+	/*msg := fmt.Sprintf(`Press S key to change the window scale
 Press F key to switch the fullscreen state
 Press Q key to quit
 Cursor: (%d, %d)
 FPS: %0.2f
 Device Scale Factor: %0.2f
-ScreenSize %d %d`, x, y, ebiten.CurrentFPS(), ebiten.DeviceScaleFactor(),screenWidth, screenHeight )
-	ebitenutil.DebugPrint(screen, msg)
+ScreenSize %d %d`, x, y, ebiten.CurrentFPS(), ebiten.DeviceScaleFactor(),screenWidth, screenHeight )*/
+	ebitenutil.DebugPrint(screen, "") // msg)
 	return nil
 }
 

@@ -23,8 +23,9 @@ type Sprite struct {
 	image       *ebiten.Image
 
 }
-
-
+const (
+	numSprites = 200
+)
 var (
 	count = 0
 )
@@ -35,24 +36,24 @@ func (pl *Sprite) ScaleTo(factor float64) {
 }
 
 func (pl *Sprite) Tick(screen *ebiten.Image)  {
-	//fmt.Println("tick", &pl)
-	count++
-	err := ebitenutil.DebugPrint(screen, "pota merda")
-	if err != nil{
-		fmt.Println(err)
-	}
 
+	count++
+	msg := fmt.Sprintf("%d %d %d",count, pl.frameNum, (count / 5) % pl.frameNum)
+	ebitenutil.DebugPrint(screen, msg)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(pl.scale, pl.scale )
 	op.GeoM.Translate(-float64(pl.frameWidth)/2, -float64(pl.frameHeight)/2)
 	op.GeoM.Translate(pl.x, pl.y)
 
-	i := (count / 5) % pl.frameNum
+	i := (count / numSprites) % pl.frameNum
 	sx, sy := pl.frameOX, pl.frameOY+i*pl.frameHeight
 	r := image.Rect(sx, sy, sx+pl.frameWidth, sy+pl.frameHeight)
 	op.SourceRect = &r
 	screen.DrawImage(pl.image, op)
 
+	if count > pl.frameNum * 1000{
+		count = 0
+	}
 }
 
 func (pl *Sprite) Init(x,y, scale float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
