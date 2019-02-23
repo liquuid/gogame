@@ -2,6 +2,7 @@ package sprite
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/liquuid/gogame/resources/images"
@@ -10,31 +11,39 @@ import (
 	"log"
 )
 
-type Player struct {
+type Sprite struct {
 	x           float64
 	y           float64
+	scale float64
 	frameOX     int
 	frameOY     int
 	frameWidth  int
 	frameHeight int
 	frameNum    int
 	image       *ebiten.Image
+
 }
 
 
 var (
 	count = 0
-
 )
-func (pl Player) MoveTo() {}
-func (pl Player) ScaleTo(factor float64) {}
 
-func (pl Player) Tick(screen *ebiten.Image)  {
+func (pl *Sprite) MoveTo() { fmt.Println(("move"))}
+func (pl *Sprite) ScaleTo(factor float64) {
+	pl.scale = factor
+}
 
+func (pl *Sprite) Tick(screen *ebiten.Image)  {
+	//fmt.Println("tick", &pl)
 	count++
-	ebitenutil.DebugPrint(screen, "pota merda")
+	err := ebitenutil.DebugPrint(screen, "pota merda")
+	if err != nil{
+		fmt.Println(err)
+	}
 
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(pl.scale, pl.scale )
 	op.GeoM.Translate(-float64(pl.frameWidth)/2, -float64(pl.frameHeight)/2)
 	op.GeoM.Translate(pl.x, pl.y)
 
@@ -46,15 +55,16 @@ func (pl Player) Tick(screen *ebiten.Image)  {
 
 }
 
-func (pl *Player) Init(x,y float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
+func (pl *Sprite) Init(x,y, scale float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
 
 	pl.frameOX = 0
 	pl.frameOY = 77
 	pl.frameWidth = 90
 	pl.frameHeight = 77
 	pl.frameNum = 4
-	pl.x = 100
-	pl.y = 100
+	pl.x = x
+	pl.y = y
+	pl.scale = scale
 
 	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMGR))
 	if err != nil {

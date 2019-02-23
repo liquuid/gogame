@@ -15,8 +15,8 @@ import (
 var (
 	windowDecorated = flag.Bool("windowdecorated", true, "whether the window is decorated")
 	terminated = errors.New("terminated")
-	zoomScale = 1
-	sprites = []*game.Sprite{}
+	zoomScale = 1.0
+	sprites = make([]*game.Sprite, 10)
 	//sprites = &game.Sprites{make([]*game.Sprite, 10), 10}
 
 )
@@ -39,12 +39,21 @@ func update(screen *ebiten.Image) error {
 	}
 
 	window.Update(screen)
-	//pl.Tick(screen)
+
+	for i := 0; i < 10 ; i++ {
+		sprites[i].ScaleTo(zoomScale)
+		sprites[i].Tick(screen)  // .Tick(screen)
+	}
 
 	return nil
 }
 
 func ToggleZoom() {
+	if zoomScale == 1.0{
+		zoomScale = 0.5
+	} else {
+		zoomScale = 1
+	}
 	fmt.Println("Zoomtoggled")
 }
 
@@ -57,14 +66,18 @@ func main() {
 	fmt.Printf("Screen size in fullscreen: %d, %d\n", w, h)
 
 	ebiten.SetWindowDecorated(*windowDecorated)
-
-	//pl.Init(100,100, 0,77,90,77,4)
 	fmt.Println(len(sprites))
-	for i := 0; i < 5 ; i++{
-		sprites = append(sprites, &game.Player{})
+
+	for i := 0; i < 10 ; i++{
+
+		x := float64(100.0+(10*i))
+		y := float64(100.0+(10*i))
+		sprites[i] = new(game.Sprite)
+		sprites[i].Init(x, y, 1, 0,77,90,77,4)
 	}
 
 	if err := ebiten.Run(update, initScreenWidth, initScreenHeight, initScreenScale, "Window Size (Ebiten Demo)"); err != nil && err != terminated {
 		log.Fatal(err)
 	}
+
 }

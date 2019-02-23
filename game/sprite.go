@@ -1,12 +1,6 @@
 package sprite
 
-import "github.com/hajimehoshi/ebiten"
-
-type Sprite interface{
-	Tick(screen *ebiten.Image)
-	MoveTo()
-	ScaleTo(factor float64)
-}
+import "fmt"
 
 type Sprites struct{
 	spriteSlice []*Sprite
@@ -16,4 +10,10 @@ type Sprites struct{
 func (s *Sprites) Add(sprt *Sprite){
 	s.spriteSlice[0] = sprt
 
+}
+
+func (s *Sprites) Update() {
+	for _ , sprite := range s.spriteSlice{
+		fmt.Println(sprite)
+	}
 }

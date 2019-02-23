@@ -19,7 +19,7 @@ func Update(screen *ebiten.Image) error{
 	screenScale := ebiten.ScreenScale()
 	screenWidth, screenHeight := screen.Size()
 	fullscreen := ebiten.IsFullscreen()
-	tps := ebiten.MaxTPS()
+	tps := 6 // ebiten.MaxTPS()
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		switch screenScale {
@@ -44,7 +44,7 @@ func Update(screen *ebiten.Image) error{
 	ebiten.SetFullscreen(fullscreen)
 	ebiten.SetRunnableInBackground(false)
 	ebiten.SetCursorVisible(true)
-	ebiten.SetVsyncEnabled(false)
+	ebiten.SetVsyncEnabled(true)
 	ebiten.SetMaxTPS(tps)
 
 	if ebiten.IsDrawingSkipped() {
@@ -52,14 +52,6 @@ func Update(screen *ebiten.Image) error{
 	}
 
 	screen.Fill(color.RGBA{0x80, 0x80, 0xc0, 0xff})
-	/*w, h := gophersImage.Size()
-	w2, h2 := screen.Size()
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(-w+w2)/2, float64(-h+h2)/2)
-	dx := math.Cos(2*math.Pi*float64(count)/360) * 10
-	dy := math.Sin(2*math.Pi*float64(count)/360) * 10
-	op.GeoM.Translate(dx, dy)
-	screen.DrawImage(gophersImage, op)*/
 
 	x, y := ebiten.CursorPosition()
 
