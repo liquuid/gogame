@@ -9,11 +9,15 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 )
 
 type Sprite struct {
 	x           float64
 	y           float64
+	xv 			float64
+	yv			float64
+
 	scale float64
 	frameOX     int
 	frameOY     int
@@ -24,7 +28,7 @@ type Sprite struct {
 
 }
 const (
-	numSprites = 200
+	numSprites = 20
 )
 var (
 	count = 0
@@ -51,6 +55,18 @@ func (pl *Sprite) Tick(screen *ebiten.Image)  {
 	op.SourceRect = &r
 	screen.DrawImage(pl.image, op)
 
+	pl.x += pl.xv
+	pl.y += pl.yv
+
+	w, h := 512, 320
+	if pl.x > float64(w) || pl.x < 0  {
+		pl.xv *= -1
+	}
+
+	if pl.y > float64(h) || pl.y < 0 {
+		pl.yv *= -1
+	}
+
 	if count > pl.frameNum * 1000{
 		count = 0
 	}
@@ -63,10 +79,12 @@ func (pl *Sprite) Init(x,y, scale float64,frameOX, frameOY, frameWidth,frameHeig
 	pl.frameWidth = 90
 	pl.frameHeight = 77
 	pl.frameNum = 4
-	pl.x = x
-	pl.y = y
+	pl.x = rand.Float64()*511
+	pl.y = rand.Float64()*319
+	pl.xv = rand.Float64()*5
+	pl.yv = rand.Float64()*5
 	pl.scale = scale
-
+	//fmt.Println(rand.Float64())
 	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMGR))
 	if err != nil {
 		log.Fatal(err)

@@ -27,7 +27,7 @@ const (
 	initScreenWidth  = 512
 	initScreenHeight = 320
 	initScreenScale  = 2
-	numSprites = 200
+	numSprites = 20
 )
 
 func update(screen *ebiten.Image) error {
