@@ -10,6 +10,7 @@ import (
 	game "github.com/liquuid/gogame/game"
 	_ "image/jpeg"
 	"log"
+	"math/rand"
 )
 
 var (
@@ -27,7 +28,7 @@ const (
 	initScreenWidth  = 512
 	initScreenHeight = 320
 	initScreenScale  = 2
-	numSprites = 20
+	numSprites = 5
 )
 
 func update(screen *ebiten.Image) error {
@@ -42,7 +43,7 @@ func update(screen *ebiten.Image) error {
 
 	for _ , sprite := range sprites{
 		sprite.ScaleTo(zoomScale)
-		sprite.Tick(screen)  // .Tick(screen)
+		sprite.Tick(screen)
 	}
 
 	return nil
@@ -54,16 +55,25 @@ func ToggleZoom() {
 	} else {
 		zoomScale = 1
 	}
-	fmt.Println("Zoomtoggled")
 }
 
 func initSprites(){
 	for i := 0; i < numSprites ; i++{
+	//for _, sprite := range sprites {
+		//fmt.Println(sprite)
 
-		x := float64(100.0+(10*i))
-		y := float64(100.0+(10*i))
+		//fmt.Println(sprites[i])
+		x := rand.Float64() * 511
+		y := 150.0
+		xv := rand.Float64() * 5
+		yv := 0.0
+
 		sprites[i] = new(game.Sprite)
-		sprites[i].Init(x, y, 1, 0,77,90,77,4)
+		//sprite = new(game.Sprite)
+		sprites[i].Init(x, y, xv, yv, 1, 0, 77, 90, 77, 4)
+		//sprite.Init(x, y, xv,yv,1, 0,77,90,77,4)
+		sprites[i].LoadAnimations()
+
 	}
 
 }

@@ -28,62 +28,62 @@ type Room struct {
 
 }
 
-func (r *Room) MoveTo() { fmt.Println(("move"))}
-func (r *Room) ScaleTo(factor float64) {
-	r.scale = factor
+func (rm *Room) MoveTo() { fmt.Println(("move"))}
+func (rm *Room) ScaleTo(factor float64) {
+	rm.scale = factor
 }
 
-func (r *Room) Tick(screen *ebiten.Image)  {
+func (rm *Room) Tick(screen *ebiten.Image)  {
 
 	count++
-	msg := fmt.Sprintf("%d %d %d",count, r.frameNum, (count / 5) % r.frameNum)
+	msg := fmt.Sprintf("%d %d %d",count, rm.frameNum, (count / 5) % rm.frameNum)
 	ebitenutil.DebugPrint(screen, msg)
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(r.scale, r.scale )
-	op.GeoM.Translate(-float64(r.frameWidth)/2, -float64(r.frameHeight)/2)
-	op.GeoM.Translate(r.x, r.y)
+	op.GeoM.Scale(rm.scale, rm.scale )
+	op.GeoM.Translate(-float64(rm.frameWidth)/2, -float64(rm.frameHeight)/2)
+	op.GeoM.Translate(rm.x, rm.y)
 
-	i := (count / numSprites) % r.frameNum
-	sx, sy := r.frameOX, r.frameOY+i*r.frameHeight
-	r := image.Rect(sx, sy, sx+r.frameWidth, sy+r.frameHeight)
+	i := (count / numSprites) % rm.frameNum
+	sx, sy := rm.frameOX, rm.frameOY+i*rm.frameHeight
+	r := image.Rect(sx, sy, sx+rm.frameWidth, sy+rm.frameHeight)
 	op.SourceRect = &r
-	screen.DrawImage(r.image, op)
+	screen.DrawImage(rm.image, op)
 
-	r.x += r.xv
-	r.y += r.yv
+	rm.x += rm.xv
+	rm.y += rm.yv
 
 	w, h := 512, 320
-	if r.x > float64(w) || r.x < 0  {
-		r.xv *= -1
+	if rm.x > float64(w) || rm.x < 0  {
+		rm.xv *= -1
 	}
 
-	if r.y > float64(h) || r.y < 0 {
-		r.yv *= -1
+	if rm.y > float64(h) || rm.y < 0 {
+		rm.yv *= -1
 	}
 
-	if count > r.frameNum * 1000{
+	if count > rm.frameNum * 1000{
 		count = 0
 	}
 }
 
-func (r *Room) Init(x,y, scale float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
+func (rm *Room) Init(x,y, scale float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
 
-	r.frameOX = 0
-	r.frameOY = 77
-	r.frameWidth = 90
-	r.frameHeight = 77
-	r.frameNum = 4
-	r.x = rand.Float64()*511
-	r.y = rand.Float64()*319
-	r.xv = rand.Float64()*5
-	r.yv = rand.Float64()*5
-	r.scale = scale
+	rm.frameOX = 0
+	rm.frameOY = 77
+	rm.frameWidth = 90
+	rm.frameHeight = 77
+	rm.frameNum = 4
+	rm.x = rand.Float64()*511
+	rm.y = rand.Float64()*319
+	rm.xv = rand.Float64()*5
+	rm.yv = rand.Float64()*5
+	rm.scale = scale
 	//fmt.Println(rand.Float64())
 	img, _, err := image.Decode(bytes.NewReader(images.BossStandIMGR))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.image, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
+	rm.image, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 
 }
