@@ -29,6 +29,7 @@ const (
 var (
 	count = 0
 	animations = make([]*animation, numAnimations)
+	op = &ebiten.DrawImageOptions{}
 )
 
 type animation struct{
@@ -45,23 +46,27 @@ func (pl *Sprite) MoveTo() { fmt.Println(("move"))}
 
 func (pl *Sprite) ScaleTo(factor float64) {
 	pl.scale = factor
+
 }
 
-func (pl *Sprite) Init(x,y,xv, yv, scale float64,frameOX, frameOY, frameWidth,frameHeight, frameNum int ) {
+func (pl *Sprite) OnClick() {
+
+}
+
+func (pl *Sprite) Init(x,y,xv, yv, scale float64 ) {
 	pl.x = x
 	pl.y = y
 	pl.xv = xv
 	pl.yv = yv
+	pl.scale = scale
 	pl.animationsDB = make(map[string]*animation)
 }
 
 func (pl *Sprite) Walk(screen *ebiten.Image) {
 
 	count++
-	//msg := fmt.Sprintf("%d %d %d",count, pl.activeAnimation.frameNum, (count / 5) % pl.activeAnimation.frameNum)
-	//ebitenutil.DebugPrint(screen, msg)
 
-	op := &ebiten.DrawImageOptions{}
+	//op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Translate(-float64(pl.activeAnimation.frameWidth)/2, -float64(pl.activeAnimation.frameHeight)/2)
 	op.GeoM.Translate(pl.x, pl.y)
@@ -70,7 +75,7 @@ func (pl *Sprite) Walk(screen *ebiten.Image) {
 	sx, sy := pl.activeAnimation.frameOX, pl.activeAnimation.frameOY+i*pl.activeAnimation.frameHeight
 	r := image.Rect(sx, sy, sx+pl.activeAnimation.frameWidth, sy+pl.activeAnimation.frameHeight)
 	op.SourceRect = &r
-	screen.DrawImage(pl.activeAnimation.sequence, op)
+	//screen.DrawImage(pl.activeAnimation.sequence, op)
 
 	pl.x += pl.xv
 	pl.y += pl.yv
@@ -92,9 +97,10 @@ func (pl *Sprite) Walk(screen *ebiten.Image) {
 
 
 func (pl *Sprite) Tick(screen *ebiten.Image)  {
-	op := &ebiten.DrawImageOptions{}
+	op = &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(pl.scale, pl.scale )
 	pl.Walk(screen)
+	screen.DrawImage(pl.activeAnimation.sequence, op)
 }
 
 
@@ -129,3 +135,4 @@ func (a *animation) LoadAnimation(frameOX, frameOY, frameWidth, frameHeight, fra
 
 	a.sequence, _ = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
 }
+
