@@ -43,7 +43,7 @@ func (rm *Room) Tick(screen *ebiten.Image)  {
 	op.GeoM.Translate(-float64(rm.frameWidth)/2, -float64(rm.frameHeight)/2)
 	op.GeoM.Translate(rm.x, rm.y)
 
-	i := (count / numSprites) % rm.frameNum
+	i := (count / NumSprites) % rm.frameNum
 	sx, sy := rm.frameOX, rm.frameOY+i*rm.frameHeight
 	r := image.Rect(sx, sy, sx+rm.frameWidth, sy+rm.frameHeight)
 	op.SourceRect = &r

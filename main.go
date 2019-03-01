@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/liquuid/gogame/input"
+
 	"github.com/liquuid/gogame/window"
+
 	game "github.com/liquuid/gogame/game"
 	_ "image/jpeg"
 	"log"
@@ -18,7 +21,7 @@ var (
 	terminated = errors.New("terminated")
 	zoomScale = 1.0
 	sprites = make([]*game.Sprite, numSprites)
-
+	strokes = make(map[*input.Stroke]struct{})
 )
 func init() {
 	
@@ -32,6 +35,23 @@ const (
 )
 
 func update(screen *ebiten.Image) error {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		//s := NewStroke(&MouseStrokeSource{})
+		//s.SetDraggingObject(g.spriteAt(s.Position()))
+		//g.strokes[s] = struct{}{}
+		X, Y := ebiten.CursorPosition()
+		fmt.Printf("apertou %d %d", X, Y )
+	}
+
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		//s := NewStroke(&MouseStrokeSource{})
+		//s.SetDraggingObject(g.spriteAt(s.Position()))
+		//g.strokes[s] = struct{}{}
+		X, Y := ebiten.CursorPosition()
+		fmt.Printf("souto %d %d", X, Y )
+	}
+
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
 		return terminated
 	}
@@ -45,6 +65,48 @@ func update(screen *ebiten.Image) error {
 		sprite.ScaleTo(zoomScale)
 		sprite.Tick(screen)
 	}
+
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		s := input.NewStroke(&input.MouseStrokeSource{})
+		s.SetDraggingObject(spriteAt(s.Position()))
+		strokes[s] = struct{}{}
+	}
+	for _, id := range inpututil.JustPressedTouchIDs() {
+		s := input.NewStroke(&input.TouchStrokeSource{id})
+		s.SetDraggingObject(spriteAt(s.Position()))
+		strokes[s] = struct{}{}
+	}
+
+	for s := range strokes {
+		updateStroke(s)
+		if s.IsReleased() {
+			delete(strokes, s)
+		}
+	}
+
+	if ebiten.IsDrawingSkipped() {
+		return nil
+	}
+
+	draggingSprites := map[*game.Sprite]struct{}{}
+	for s := range strokes {
+		if sprite := s.DraggingObject().(*game.Sprite); sprite != nil {
+			draggingSprites[sprite] = struct{}{}
+		}
+	}
+
+	/*for _, s := range sprites {
+		if _, ok := draggingSprites[s]; ok {
+			continue
+		}
+		s.Draw(screen, 0, 0, 1)
+	}
+	for s := range strokes {
+		dx, dy := s.PositionDiff()
+		if sprite := s.DraggingObject().(*game.Sprite); sprite != nil {
+			sprite.Draw(screen, dx, dy, 0.5)
+		}
+	}*/
 
 	return nil
 }
@@ -69,16 +131,61 @@ func initSprites(){
 		yv := 0.0
 
 		sprites[i] = new(game.Sprite)
-		//sprite = new(game.Sprite)
-		sprites[i].Init(x, y, xv, yv, 1, 0, 77, 90, 77, 4)
-		//sprite.Init(x, y, xv,yv,1, 0,77,90,77,4)
+		sprites[i].Init(x, y, xv, yv, 1)
 		sprites[i].LoadAnimations()
 
 	}
 
 }
 
+
+func spriteAt(x, y int) *game.Sprite {
+	// As the sprites are ordered from back to front,
+	// search the clicked/touched sprite in reverse order.
+	for i := len(sprites) - 1; i >= 0; i-- {
+		s := sprites[i]
+		if s.In(x, y) {
+			return s
+		}
+	}
+	return nil
+}
+
+func updateStroke(stroke *input.Stroke) {
+	stroke.Update()
+	if !stroke.IsReleased() {
+		return
+	}
+
+	s := stroke.DraggingObject().(*game.Sprite)
+	if s == nil {
+		return
+	}
+
+	s.MoveBy(stroke.PositionDiff())
+
+	index := -1
+	for i, ss := range sprites {
+		if ss == s {
+			index = i
+			break
+		}
+	}
+
+	// Move the dragged sprite to the front.
+	sprites = append(sprites[:index], sprites[index+1:]...)
+	sprites = append(sprites, s)
+
+	stroke.SetDraggingObject(nil)
+}
+
 func main() {
+
+	game.NumSprites = numSprites
+	game.InitScreenWidth = initScreenWidth
+	game.InitScreenHeight = initScreenHeight
+
+
 	flag.Parse()
 
 	fmt.Printf("Device scale factor: %0.2f\n", ebiten.DeviceScaleFactor())
