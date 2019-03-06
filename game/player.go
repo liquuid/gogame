@@ -66,14 +66,14 @@ func (s *Sprite) Init(x,y,xv, yv, scale float64 ) {
 	s.animationsDB = make(map[string]*animation)
 }
 
-func (s *Sprite) Walk(screen *ebiten.Image) {
+func (s *Sprite) Walk(screen *ebiten.Image, x float64, y float64) {
 
 	count++
 
 	//op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Translate(-float64(s.activeAnimation.frameWidth)/2, -float64(s.activeAnimation.frameHeight)/2)
-	op.GeoM.Translate(s.x, s.y)
+	op.GeoM.Translate(s.x + x, s.y + y )
 
 	i := (count / NumSprites) % s.activeAnimation.frameNum
 	sx, sy := s.activeAnimation.frameOX, s.activeAnimation.frameOY+i*s.activeAnimation.frameHeight
@@ -100,10 +100,10 @@ func (s *Sprite) Walk(screen *ebiten.Image) {
 }
 
 
-func (s *Sprite) Tick(screen *ebiten.Image)  {
+func (s *Sprite) Tick(screen *ebiten.Image, x float64, y float64)  {
 	op = &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(s.scale, s.scale )
-	s.Walk(screen)
+	s.Walk(screen, x, y)
 	screen.DrawImage(s.activeAnimation.sequence, op)
 }
 

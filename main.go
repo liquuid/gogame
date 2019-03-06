@@ -22,9 +22,12 @@ var (
 	zoomScale = 1.0
 	sprites = make([]*game.Sprite, numSprites)
 	strokes = make(map[*input.Stroke]struct{})
+	cam_x float64
+	cam_y float64
 )
+
 func init() {
-	
+
 }
 
 const (
@@ -55,15 +58,32 @@ func update(screen *ebiten.Image) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
 		return terminated
 	}
+
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		ToggleZoom()
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		cam_x += 50
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		cam_x += -50
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		cam_y += -50
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		cam_y += 50
 	}
 
 	window.Update(screen)
 
 	for _ , sprite := range sprites{
 		sprite.ScaleTo(zoomScale)
-		sprite.Tick(screen)
+		sprite.Tick(screen, cam_x, cam_y)
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
@@ -89,6 +109,7 @@ func update(screen *ebiten.Image) error {
 	}
 
 	draggingSprites := map[*game.Sprite]struct{}{}
+
 	for s := range strokes {
 		if sprite := s.DraggingObject().(*game.Sprite); sprite != nil {
 			draggingSprites[sprite] = struct{}{}
