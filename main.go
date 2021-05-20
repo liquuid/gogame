@@ -7,9 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/liquuid/gogame/input"
-
 	"github.com/liquuid/gogame/window"
-
 	game "github.com/liquuid/gogame/game"
 	_ "image/jpeg"
 	"log"
