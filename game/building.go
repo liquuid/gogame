@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
-	"github.com/liquuid/gogame/resources/images"
+	"./resources/images"
 	"image"
 	_ "image/png"
 	"log"
